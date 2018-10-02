@@ -11,7 +11,8 @@ import com.coastal.dwds.CoastalIntegration.constant.Global;
 
 public class ETLGeneratedFiles extends TimerTask {
 	private static final Logger log = LogManager.getLogger(ETLGeneratedFiles.class);
-	//TemplateFileGeneration well = new TemplateFileGeneration();
+	
+	CopyFilesProcess copyprocess = new CopyFilesProcess();
 	ReadExcelProcess excelprocess = new ReadExcelProcess();
 	MailExcelFileData fileData = new MailExcelFileData();
 
@@ -22,10 +23,11 @@ public class ETLGeneratedFiles extends TimerTask {
 	public void run() {
 		System.out.println("creating or updating directories");
 		boolean success = false;
+		boolean copyResult = false;
 		Properties prop = null;
 		try {
 			prop = fileData.loadPropertiesFile();
-			// System.out.println("crating or updating backup and process location");
+			
 			File reportEngineLocation = new File(prop.getProperty(Global.PSC) + Global.FOLDER_SEPARATOR
 					+ prop.getProperty(Global.REPORT_ENGINE_LOCATION) + Global.FOLDER_SEPARATOR);
 			File reportEngineProcessFileLocation = new File(reportEngineLocation + Global.FOLDER_SEPARATOR
@@ -38,12 +40,14 @@ public class ETLGeneratedFiles extends TimerTask {
 				flagFile.delete();
 			}
 			System.out.println(" Started executing ETL Script to generate DDR Reports...");
-			//success = ETLTransformationReport(prop);
-			excelprocess.readExcelFile(prop);
+			
+			copyResult = copyprocess.copyFiles(prop);
+			if(copyResult == true) {
+				excelprocess.readExcelFile(prop);
+			}
+			
 			if (success) {
 				System.out.println(" Finished the process of generating DDR Reports.");
-				//excelprocess.readExcelFile(reportEngineProcessFileLocation, prop);
-				//success = well.processReportEngineFiles(reportEngineProcessFileLocation, prop);
 				success = true;
 			}
 		} catch (NullPointerException e) {

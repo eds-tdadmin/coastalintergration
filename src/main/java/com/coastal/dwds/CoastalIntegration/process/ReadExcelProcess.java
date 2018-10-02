@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.coastal.dwds.CoastalIntegration.constant.Global;
 import com.coastal.dwds.CoastalIntegration.model.CasingHoleSection;
 import com.coastal.dwds.CoastalIntegration.model.Costs;
 import com.coastal.dwds.CoastalIntegration.model.CustomBeanFactory;
@@ -30,11 +31,9 @@ import net.sf.jasperreports.engine.JRException;
 
 public class ReadExcelProcess {
 
-	private static final String FILE_NAME = "C:\\Users\\USER\\Desktop\\Development\\Projects\\Coastal\\Coastal sample data FARID (28.08.18).xlsm";
+	public boolean readExcelFile(Properties prop) throws JRException {
 
-	
-	public void readExcelFile(Properties prop) throws JRException {
-
+		boolean exportResult = false;
 		ExportExcelProcess expExl = new ExportExcelProcess();
 		WellInfo wellinfo = new WellInfo();
 		DepthDays depthdays = new DepthDays();
@@ -46,57 +45,71 @@ public class ReadExcelProcess {
 		List<OpSummary> opSummaryLst = new ArrayList<OpSummary>();
 
 		try {
+			String sourceFolder = prop.getProperty(Global.COPY_FOLDER);
+			File aDirectory = new File(sourceFolder);
 
-			FileInputStream excelFile = new FileInputStream(new File(FILE_NAME));
-			Workbook workbook = new XSSFWorkbook(excelFile);
-			Sheet datatypeSheet = workbook.getSheetAt(0);
+			// get a listing of all files in the directory
+			String[] filesInDir = aDirectory.list();
 
-			Row startRow = findRow(datatypeSheet, "DAILY DRILLING REPORT");
-			Row depthRow = findRow(datatypeSheet, "DEPTH DAYS");
-			Row statusRow = findRow(datatypeSheet, "STATUS");
-			Row opsSumRow = findRow(datatypeSheet, "OPERATION SUMMARY");
-			Row bitDataRow = findRow(datatypeSheet, "BIT DATA");
-			Row bhaRow = findRow(datatypeSheet, "BHA");
-			Row gasReadingRow = findRow(datatypeSheet, "GAS READINGS");
-			Row pumpRow = findRow(datatypeSheet, "PUMP/HYDRAULICs");
-			Row lotRow = findRow(datatypeSheet, "LOT/FIT");
-			Row logisticRow = findRow(datatypeSheet, "LOGISTIC SUPPORT");
-			Row bulkRow = findRow(datatypeSheet, "BULKS");
-			Row weatherRow = findRow(datatypeSheet, "WEATHER");
-			Row safetyRow = findRow(datatypeSheet, "SAFETY");
-			Row surveyRow = findRow(datatypeSheet, "SURVEYS");
+			// have everything i need, just print it now
+			for (int i = 0; i < filesInDir.length; i++) {
 
-			System.out.println(startRow.getRowNum() + "," + depthRow.getRowNum() + "," + statusRow.getRowNum());
+				FileInputStream excelFile = new FileInputStream(new File(sourceFolder + filesInDir[i]));
+				Workbook workbook = new XSSFWorkbook(excelFile);
+				Sheet datatypeSheet = workbook.getSheetAt(0);
 
-			if (startRow != null && depthRow != null) {
-				wellinfo = setWellInfo(datatypeSheet, startRow.getRowNum(), depthRow.getRowNum());
-				elevationinfo = setElevationInfo(datatypeSheet, startRow.getRowNum(), depthRow.getRowNum());
+				Row startRow = findRow(datatypeSheet, "DAILY DRILLING REPORT");
+				Row depthRow = findRow(datatypeSheet, "DEPTH DAYS");
+				Row statusRow = findRow(datatypeSheet, "STATUS");
+				Row opsSumRow = findRow(datatypeSheet, "OPERATION SUMMARY");
+				Row bitDataRow = findRow(datatypeSheet, "BIT DATA");
+				Row bhaRow = findRow(datatypeSheet, "BHA");
+				Row gasReadingRow = findRow(datatypeSheet, "GAS READINGS");
+				Row pumpRow = findRow(datatypeSheet, "PUMP/HYDRAULICs");
+				Row lotRow = findRow(datatypeSheet, "LOT/FIT");
+				Row logisticRow = findRow(datatypeSheet, "LOGISTIC SUPPORT");
+				Row bulkRow = findRow(datatypeSheet, "BULKS");
+				Row weatherRow = findRow(datatypeSheet, "WEATHER");
+				Row safetyRow = findRow(datatypeSheet, "SAFETY");
+				Row surveyRow = findRow(datatypeSheet, "SURVEYS");
+
+				System.out.println(startRow.getRowNum() + "," + depthRow.getRowNum() + "," + statusRow.getRowNum());
+
+				if (startRow != null && depthRow != null) {
+					wellinfo = setWellInfo(datatypeSheet, startRow.getRowNum(), depthRow.getRowNum());
+					elevationinfo = setElevationInfo(datatypeSheet, startRow.getRowNum(), depthRow.getRowNum());
+				}
+				if (depthRow != null && statusRow != null) {
+					depthdays = setDepthDaysInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
+					casinghole = setCasingHoleInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
+					costinfo = setCostInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
+					nptinfo = setNptInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
+				}
+				if (statusRow != null && opsSumRow != null) {
+					statusinfo = setStatusInfo(datatypeSheet, statusRow.getRowNum(), opsSumRow.getRowNum());
+				}
+				if (opsSumRow != null && bitDataRow != null) {
+					opSummaryLst = setOpSummaryInfo(datatypeSheet, opsSumRow.getRowNum(), bitDataRow.getRowNum());
+				}
+
+				ReportBean reportBean = new ReportBean(wellinfo, depthdays, casinghole, costinfo, nptinfo,
+						elevationinfo, statusinfo, opSummaryLst);
+
+				CustomBeanFactory.setBeanArray(reportBean);
+
+				exportResult = expExl.exportExcel(prop);
+
 			}
-			if (depthRow != null && statusRow != null) {
-				depthdays = setDepthDaysInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
-				casinghole = setCasingHoleInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
-				costinfo = setCostInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
-				nptinfo = setNptInfo(datatypeSheet, depthRow.getRowNum(), statusRow.getRowNum());
-			}
-			if (statusRow != null && opsSumRow != null) {
-				statusinfo = setStatusInfo(datatypeSheet, statusRow.getRowNum(), opsSumRow.getRowNum());
-			}
-			if (opsSumRow != null && bitDataRow != null) {
-				opSummaryLst = setOpSummaryInfo(datatypeSheet, opsSumRow.getRowNum(), bitDataRow.getRowNum());
-			}
 
-			ReportBean reportBean = new ReportBean(wellinfo, depthdays, casinghole, costinfo, nptinfo, elevationinfo,
-					statusinfo, opSummaryLst);
-
-			CustomBeanFactory.setBeanArray(reportBean);
-
-			expExl.exportExcel();
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException fnfe) {
+			exportResult = false;
+			fnfe.printStackTrace();
+		} catch (IOException ioe) {
+			exportResult = false;
+			ioe.printStackTrace();
 		}
+
+		return exportResult;
 
 	}
 
@@ -421,10 +434,10 @@ public class ReadExcelProcess {
 		for (int rowNum = start + 3; rowNum < end; rowNum++) {
 			opsSummary = new OpSummary();
 			row = sheet.getRow(rowNum);
-			
+
 			if (row.getCell(1).getDateCellValue() != null && row.getCell(2).getDateCellValue() != null) {
 				opsSummary.setFromdt(row.getCell(1).getDateCellValue());
-				System.out.println("--- opsummary check 1 ----"+opsSummary.getFromdt());
+				System.out.println("--- opsummary check 1 ----" + opsSummary.getFromdt());
 				if (row.getCell(2) != null) {
 					opsSummary.setTodt(row.getCell(2).getDateCellValue());
 				}
