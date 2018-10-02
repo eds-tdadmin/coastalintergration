@@ -12,7 +12,7 @@ import com.coastal.dwds.CoastalIntegration.constant.Global;
 public class ETLGeneratedFiles extends TimerTask {
 	private static final Logger log = LogManager.getLogger(ETLGeneratedFiles.class);
 	
-	CopyFilesProcess copyprocess = new CopyFilesProcess();
+	FilesTransferProcess fileprocess = new FilesTransferProcess();
 	ReadExcelProcess excelprocess = new ReadExcelProcess();
 	MailExcelFileData fileData = new MailExcelFileData();
 
@@ -41,12 +41,13 @@ public class ETLGeneratedFiles extends TimerTask {
 			}
 			System.out.println(" Started executing ETL Script to generate DDR Reports...");
 			
-			copyResult = copyprocess.copyFiles(prop);
+			copyResult = fileprocess.copyFiles(prop);
 			if(copyResult == true) {
-				excelprocess.readExcelFile(prop);
+				success = excelprocess.readExcelFile(prop);
 			}
 			
 			if (success) {
+				fileprocess.delete(prop);
 				System.out.println(" Finished the process of generating DDR Reports.");
 				success = true;
 			}

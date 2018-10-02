@@ -38,6 +38,7 @@ public class Global {
 	public static final String LOG_FILE = "LOG_LOCATION";
 	public static final String SCHEDULE_PERIOD = "SCHEDULE_PERIOD";
 	public static final String PROPERTY_EXTENTSION = "PSCJava.properties";
+	public static final String LAST_COPIED_FILE = "lastcopied.txt";
 	public static final String CDS = "CDS";
 	public static final String REMOVE_SCHEDULE_HOUR = "REMOVE_SCHEDULE_HOUR";
 	public static final String REMOVE_SCHEDULE_MINUTES = "REMOVE_SCHEDULE_MINUTES";

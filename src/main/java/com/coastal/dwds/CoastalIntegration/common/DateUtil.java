@@ -135,9 +135,8 @@ public class DateUtil {
 	}
 
 	/**
-	 * Compares given date with current date. If given date is later than
-	 * today's date returns negative value, if earlier returns positive value
-	 * else zero.
+	 * Compares given date with current date. If given date is later than today's
+	 * date returns negative value, if earlier returns positive value else zero.
 	 * 
 	 * @param date
 	 * @return
@@ -311,9 +310,9 @@ public class DateUtil {
 	}
 
 	/**
-	 * comparison of dates. if startDate is greater than endDate then result >
-	 * 0. if startDate is less than endDate then result < 0. if startDate is
-	 * equal to endDate result = 0.
+	 * comparison of dates. if startDate is greater than endDate then result > 0. if
+	 * startDate is less than endDate then result < 0. if startDate is equal to
+	 * endDate result = 0.
 	 * 
 	 * @param startDate
 	 *            start date.
@@ -406,10 +405,11 @@ public class DateUtil {
 	public static String formatIntoHHMMSS(final int secsIn) {
 		if (secsIn > 0) {
 			try {
-				int hours = secsIn / TOTAL_TIME, remainder = secsIn % TOTAL_TIME, minutes = remainder / MINUTE, seconds = remainder
-						% MINUTE;
+				int hours = secsIn / TOTAL_TIME, remainder = secsIn % TOTAL_TIME, minutes = remainder / MINUTE,
+						seconds = remainder % MINUTE;
 
-				return ((hours < TEEN ? "0" : "") + hours + (minutes < TEEN ? "0" : "") + minutes + (seconds < TEEN ? "0" : "") + seconds);
+				return ((hours < TEEN ? "0" : "") + hours + (minutes < TEEN ? "0" : "") + minutes
+						+ (seconds < TEEN ? "0" : "") + seconds);
 			} catch (Exception e) {
 				log.error(secsIn);
 			}
@@ -425,9 +425,11 @@ public class DateUtil {
 	public static String formatIntoHHMMSS(final String secsInString) {
 		try {
 			int secsIn = Integer.parseInt(secsInString);
-			int hours = secsIn / TOTAL_TIME, remainder = secsIn % TOTAL_TIME, minutes = remainder / MINUTE, seconds = remainder % MINUTE;
+			int hours = secsIn / TOTAL_TIME, remainder = secsIn % TOTAL_TIME, minutes = remainder / MINUTE,
+					seconds = remainder % MINUTE;
 
-			return ((hours < TEEN ? "0" : "") + hours + (minutes < TEEN ? "0" : "") + minutes + (seconds < TEEN ? "0" : "") + seconds);
+			return ((hours < TEEN ? "0" : "") + hours + (minutes < TEEN ? "0" : "") + minutes
+					+ (seconds < TEEN ? "0" : "") + seconds);
 		} catch (Exception e) {
 			log.error(secsInString);
 		}
@@ -495,8 +497,8 @@ public class DateUtil {
 	/**
 	 * @param bpDay
 	 *            generate date based on billingPeriod. if Bpday is less than
-	 *            current day then Bp belongs to nextMonth. if Bpday is greater
-	 *            than current day then Bp belongs to currentMonth.
+	 *            current day then Bp belongs to nextMonth. if Bpday is greater than
+	 *            current day then Bp belongs to currentMonth.
 	 * @return Calendar.
 	 */
 	public final static Calendar getDateFromBPDay(final String bpDay) {
@@ -1041,8 +1043,13 @@ public class DateUtil {
 	public static final String DATE_YYYYMMDD_FORMAT = "yyyyMMdd";
 
 	/**
-	 * Thread-safe SimpleDateFormat Use this instead of create new
-	 * SimpleDateFormat everytime.
+	 * date format
+	 */
+	public static final String DATE_DDMMYYYYHHMMSS_FORMAT = "dd-MM-yyyy HH:mm:ss";
+
+	/**
+	 * Thread-safe SimpleDateFormat Use this instead of create new SimpleDateFormat
+	 * everytime.
 	 */
 	private static final ThreadLocal<SimpleDateFormat> format = new ThreadLocal<SimpleDateFormat>() {
 		@Override
@@ -1057,5 +1064,18 @@ public class DateUtil {
 	 * Constructor for utility class.
 	 */
 	private DateUtil() {
+	}
+
+	/**
+	 * convert date format
+	 * 
+	 * @param time
+	 * @return
+	 * @throws ParseException
+	 */
+	public static Date convertTimetoDateFormat(long time) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		String newDate = sdf.format(new Date(time));
+		return sdf.parse(newDate);
 	}
 }

@@ -11,6 +11,7 @@ import com.coastal.dwds.CoastalIntegration.constant.Global;
 import com.coastal.dwds.CoastalIntegration.process.MailExcelFileData;
 
 public class Integration {
+	
 	/** construct log object to debug. */
 	private static final Logger log = LogManager.getLogger(Integration.class);
 	static MailExcelFileData fileData = new MailExcelFileData();
