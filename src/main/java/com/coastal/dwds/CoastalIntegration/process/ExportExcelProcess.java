@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Properties;
 
+import com.coastal.dwds.CoastalIntegration.common.DateUtil;
 import com.coastal.dwds.CoastalIntegration.constant.Global;
 import com.coastal.dwds.CoastalIntegration.model.CustomBeanFactory;
+import com.coastal.dwds.CoastalIntegration.model.WellInfo;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -22,9 +24,11 @@ import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
 public class ExportExcelProcess {
 
-	public boolean exportExcel(Properties prop) {
+	public boolean exportExcel(Properties prop, WellInfo wellinfo) {
 		boolean expResult = true;
 		try {
+
+			String reportName = createReportName(wellinfo);
 
 			HashMap<String, Object> parameter = new HashMap<String, Object>();
 			parameter.put("company", "Company Name - Coastal Energy");
@@ -34,21 +38,15 @@ public class ExportExcelProcess {
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter,
 					new JRBeanCollectionDataSource(CustomBeanFactory.getBeanCollection()));
 
-			/*
-			 * JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,
-			 * parameter, new JREmptyDataSource());
-			 */
-			// JasperExportManager.exportReportToPdfFile(jasperPrint, "sample.pdf");
-
 			JRXlsxExporter exporter = new JRXlsxExporter();
 			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 			File outputFile = new File(prop.getProperty(Global.PSC) + Global.FOLDER_SEPARATOR
 					+ prop.getProperty(Global.REPORT_ENGINE_LOCATION) + Global.FOLDER_SEPARATOR
 					+ Global.FOLDER_SEPARATOR + prop.getProperty(Global.PROCESS_FOLDER) + Global.FOLDER_SEPARATOR
-					+ "\\excelTest.xlsx");
+					+ reportName + ".xlsx");
 			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));
 			SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
-			configuration.setDetectCellType(true);// Set configuration as you like it!!
+			configuration.setDetectCellType(true);
 			configuration.setCollapseRowSpan(false);
 			exporter.setConfiguration(configuration);
 			exporter.exportReport();
@@ -61,5 +59,21 @@ public class ExportExcelProcess {
 		}
 		return expResult;
 
+	}
+
+	private String createReportName(WellInfo wellinfo) {
+
+		StringBuilder strBuild = new StringBuilder();
+		String reportName = "";
+
+		String year = String.valueOf(DateUtil.getYearFromDate(wellinfo.getReportdate()));
+		String reportdate = DateUtil.convertDateToyyyymmddFormat(wellinfo.getReportdate(),
+				DateUtil.DATE_YYYYMMDDHHMMSS_FORMAT);
+
+		reportName = strBuild.append(year).append("_").append("Coastal Energy").append("_")
+				.append(wellinfo.getWellname()).append("_").append(reportdate).append("_").append("DDR_Report No - ")
+				.append(String.valueOf(wellinfo.getReportno())).toString();
+
+		return reportName;
 	}
 }

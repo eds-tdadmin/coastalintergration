@@ -33,11 +33,11 @@ public class CopyFilesProcess {
 			}
 			long lastModified = source.lastModified();
 			Date time = format(lastModified);
-			System.out.printf("file %s was last modified at %s %n", source.getName(), time);
 			if (i == 0) {
 				updatedDate = time;
 			}
 			if (time.compareTo(updatedDate) > 0) {
+				System.out.printf("file %s was last modified at %s %n", source.getName(), time);
 				copyFile(source, dest);
 				updatedDate = time;
 				result = true;

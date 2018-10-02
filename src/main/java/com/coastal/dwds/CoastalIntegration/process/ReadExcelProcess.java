@@ -97,7 +97,7 @@ public class ReadExcelProcess {
 
 				CustomBeanFactory.setBeanArray(reportBean);
 
-				exportResult = expExl.exportExcel(prop);
+				exportResult = expExl.exportExcel(prop, wellinfo);
 
 			}
 
