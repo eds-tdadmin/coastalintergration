@@ -27,7 +27,7 @@ import com.coastal.dwds.CoastalIntegration.constant.GlobalEmail;
 import com.coastal.dwds.CoastalIntegration.constant.GlobalErrors;
 
 /**
- * @author Madhan
+ * @author Syafiza
  */
 public class MailExcelFileData {
 	private static final Logger log = LogManager.getLogger(MailExcelFileData.class);
@@ -75,6 +75,7 @@ public class MailExcelFileData {
 		try {
 			success = sender.sendErrorLogEmail(subject, bodyMessage + errMessage, prop);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			log.error(GlobalErrors.MAIL_NETWORK_ERROR + GlobalEmail.MAIL_SMTP_PORT + Global.NEXT_LINE);
 			log.error(ex.getMessage() + Global.NEXT_LINE + GlobalErrors.NETWORK_ADMIN);
 		}
@@ -132,9 +133,9 @@ public class MailExcelFileData {
 					pscName = getNameCell(tableSheet).trim();
 					// Iterate the general information from start and end of
 					// this rows
-					Row genralStartRow = findRow(tableSheet, GlobalCellsConstants.WELL_NAME);
+					Row generalStartRow = findRow(tableSheet, GlobalCellsConstants.WELL_NAME);
 					Row generalEndRow = findRow(tableSheet, GlobalCellsConstants.RIG_CONTRACTOR);
-					generalMap = constantData.addGeneralConstantCells(tableSheet, genralStartRow.getRowNum(),
+					generalMap = constantData.addGeneralConstantCells(tableSheet, generalStartRow.getRowNum(),
 							generalEndRow.getRowNum(), generalMap);
 
 					if (generalMap.containsKey(GlobalCellsConstants.REPORT_NO)) {
@@ -170,15 +171,20 @@ public class MailExcelFileData {
 			}
 			success = true;
 		} catch (IOException e) {
+			e.printStackTrace();
 			log.error(GlobalErrors.PROCESS_INPUT_ERROR + GlobalErrors.FILE_NOT_FOUND + Global.NEXT_LINE);
 			errorLogMail(e.getMessage(), prop);
 		} catch (NullPointerException ex) {
+			ex.printStackTrace();
 			log.error(ex.getMessage());
 		} catch (StringIndexOutOfBoundsException exp) {
+			exp.printStackTrace();
 			log.error(exp.getMessage());
 		} catch (IllegalStateException exp) {
+			exp.printStackTrace();
 			log.error(exp.getMessage());
 		} catch (Exception exp) {
+			exp.printStackTrace();
 			log.error(exp.getMessage());
 		}
 		return success;
@@ -207,6 +213,7 @@ public class MailExcelFileData {
 			zos.close();
 			System.out.println("Compress the output file " + targetZip);
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(e.getMessage());
 		}
 		return targetZip;
@@ -226,6 +233,7 @@ public class MailExcelFileData {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(e.getMessage());
 		}
 		return prop;

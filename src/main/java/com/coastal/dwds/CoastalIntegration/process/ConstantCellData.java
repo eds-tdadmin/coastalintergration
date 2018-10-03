@@ -9,7 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import com.coastal.dwds.CoastalIntegration.constant.GlobalCellsConstants;
 
 /**
- * @author Madhan
+ * @author Syafiza
  *
  */
 public class ConstantCellData {
@@ -37,7 +37,7 @@ public class ConstantCellData {
 					generalMap.put(row.getCell(7).toString().trim(), row.getCell(9).toString().trim());
 				}
 				if (row.getCell(13) != null) {
-					generalMap.put(row.getCell(11).toString().trim(), row.getCell(13).toString().trim());
+					generalMap.put(row.getCell(10).toString().trim(), row.getCell(12).toString().trim());
 				}
 				if (row.getCell(15) != null) {
 					generalMap.put(row.getCell(14).toString().trim(), row.getCell(15).toString().trim());

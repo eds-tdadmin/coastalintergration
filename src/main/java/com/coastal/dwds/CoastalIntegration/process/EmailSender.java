@@ -6,7 +6,6 @@ import java.net.Inet4Address;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -27,7 +26,6 @@ import com.coastal.dwds.CoastalIntegration.constant.Global;
 import com.coastal.dwds.CoastalIntegration.constant.GlobalCellsConstants;
 import com.coastal.dwds.CoastalIntegration.constant.GlobalEmail;
 import com.coastal.dwds.CoastalIntegration.constant.GlobalErrors;
-import com.sun.mail.util.MailConnectException;
 
 /**
  * @author Madhan
@@ -46,8 +44,8 @@ public class EmailSender {
 	 * @throws IOException
 	 */
 
-	public boolean sendPSCMail(File outputFile, String name, String reportNo, String reportDate, String wellName, Properties prop)
-			throws IOException {
+	public boolean sendPSCMail(File outputFile, String name, String reportNo, String reportDate, String wellName,
+			Properties prop) throws IOException {
 		String port = "";
 		String mailFrom = "";
 		String password = "";
@@ -63,6 +61,8 @@ public class EmailSender {
 			mailFrom = prop.getProperty(GlobalEmail.MAIL_FROM_ADDRESS_USERNAME);
 			password = prop.getProperty(GlobalEmail.MAIL_FROM_ADDRESS_PASSWORD);
 
+			System.out.println("Host :: " + host);
+
 			// message info
 			String mailProp = prop.getProperty(GlobalEmail.DDR_MAIL_TO_ADDRESS);
 			String[] mailTo = mailProp.split(",");
@@ -72,7 +72,8 @@ public class EmailSender {
 			// attachments
 			attachFiles = new String[1];
 			attachFiles[0] = outputFile.toString();
-			success = sendEmailWithAttachments(host, port, mailFrom, password, mailTo, subject, message, attachFiles, prop);
+			success = sendEmailWithAttachments(host, port, mailFrom, password, mailTo, subject, message, attachFiles,
+					prop);
 		} catch (Exception ex) {
 			log.error(GlobalErrors.MAIL_NETWORK_ERROR + prop.getProperty(GlobalEmail.SMTP_PORT) + Global.NEXT_LINE);
 			log.error(ex.getMessage() + Global.NEXT_LINE + GlobalErrors.NETWORK_ADMIN);
@@ -89,31 +90,31 @@ public class EmailSender {
 	 *             mail notification for mandatory fields having null values
 	 * @throws MessagingException
 	 */
-	public boolean sendMailNotification(StringBuffer sb, File fileLocation, Properties prop) throws IOException,
-			MessagingException {
+	public boolean sendMailNotification(StringBuffer sb, File fileLocation, Properties prop)
+			throws IOException, MessagingException {
 
 		// get SMTP server properties
 		Properties properties = new Properties();
-		Session session = null;
 		boolean success = false;
 		try {
 
 			final String userName = prop.getProperty(GlobalEmail.MAIL_FROM_ADDRESS_USERNAME);
 			final String password = prop.getProperty(GlobalEmail.MAIL_FROM_ADDRESS_PASSWORD);
-			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_HOST), prop.getProperty(GlobalEmail.SMTP_MAIL_SERVER));
+			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_HOST),
+					prop.getProperty(GlobalEmail.SMTP_MAIL_SERVER));
 			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_PORT), prop.getProperty(GlobalEmail.SMTP_PORT));
 			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_AUTH_SMTP_STARTTLS_ENABLE), GlobalEmail.FALSE);
 			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_AUTH), GlobalEmail.TRUE);
 			properties.put(prop.getProperty(GlobalEmail.MAIL_USER), userName);
 			properties.put(prop.getProperty(GlobalEmail.MAIL_PASSWORD), password);
 
-			// creates a new session with an authenticator
-			Authenticator auth = new Authenticator() {
-				public PasswordAuthentication getPasswordAuthentication() {
+			// session with an authenticator
+			Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(userName, password);
 				}
-			};
-			session = Session.getInstance(properties, auth);
+			});
+
 			// creates a new e-mail message
 			String mailProp = prop.getProperty(GlobalEmail.NOTIFICATION_MAIL_TO_ADDRESS);
 			String[] mailTo = mailProp.split(",");
@@ -130,13 +131,13 @@ public class EmailSender {
 			StringBuffer footer = new StringBuffer();
 			footer.append(Global.NEXT_LINE);
 			footer.append(Global.NEXT_LINE);
-			
+
 			System.out.println(sb.toString());
 
 			// creates message part
 			MimeBodyPart messageBodyPart = new MimeBodyPart();
-			messageBodyPart.setContent(
-					sb.toString() + footer + Global.FILE_LOCATION +" "+Inet4Address.getLocalHost().getHostAddress()+ Global.NEXT_LINE + fileLocation.toString(),
+			messageBodyPart.setContent(sb.toString() + footer + Global.FILE_LOCATION + " "
+					+ Inet4Address.getLocalHost().getHostAddress() + Global.NEXT_LINE + fileLocation.toString(),
 					GlobalEmail.CONTEXT);
 
 			// creates multi-part
@@ -150,8 +151,6 @@ public class EmailSender {
 			Transport.send(msg);
 			success = true;
 			System.out.println("Notification Email has been sent..");
-		} catch (MailConnectException e) {
-			log.error(GlobalErrors.MAIL_NETWORK_ERROR + e.getMessage());
 		} catch (Exception e) {
 			log.error(GlobalErrors.MAIL_FAILURE + e.getMessage());
 		}
@@ -173,8 +172,8 @@ public class EmailSender {
 	 * @throws IOException
 	 */
 	public boolean sendEmailWithAttachments(String host, String port, final String userName, final String password,
-			String[] mailTo, String subject, String message, String[] attachFiles, Properties prop) throws AddressException,
-			MessagingException, IOException {
+			String[] mailTo, String subject, String message, String[] attachFiles, Properties prop)
+			throws AddressException, MessagingException, IOException {
 		boolean result = false;
 		// sets SMTP server properties
 		Properties props = new Properties();
@@ -182,18 +181,20 @@ public class EmailSender {
 
 			props.put(prop.getProperty(GlobalEmail.MAIL_SMTP_HOST), host);
 			props.put(prop.getProperty(GlobalEmail.MAIL_SMTP_PORT), port);
-			props.put(prop.getProperty(GlobalEmail.MAIL_SMTP_AUTH_SMTP_STARTTLS_ENABLE), GlobalEmail.FALSE);
+			props.put("mail.smtp.port", "465");
+			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+			// props.put(prop.getProperty(GlobalEmail.MAIL_SMTP_AUTH_SMTP_STARTTLS_ENABLE),
+			// GlobalEmail.FALSE);
 			props.put(prop.getProperty(GlobalEmail.MAIL_SMTP_AUTH), GlobalEmail.TRUE);
 			props.put(prop.getProperty(GlobalEmail.MAIL_USER), userName);
 			props.put(prop.getProperty(GlobalEmail.MAIL_PASSWORD), password);
 			// session with an authenticator
-			Authenticator auth = new Authenticator() {
-				public PasswordAuthentication getPasswordAuthentication() {
+			Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(userName, password);
 				}
-			};
-			Session session = Session.getInstance(props, auth);
-			// session.setDebug(true);
+			});
+
 			// creates a new e-mail message
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(userName));
@@ -244,9 +245,6 @@ public class EmailSender {
 			Transport.send(msg);
 			System.out.println(GlobalErrors.DISPLAY_SUCCESS);
 			result = true;
-		} catch (MailConnectException e) {
-			log.error(GlobalErrors.MAIL_NETWORK_ERROR + e.getMessage());
-			e.printStackTrace();
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			e.printStackTrace();
@@ -264,8 +262,8 @@ public class EmailSender {
 	 * @throws MessagingException
 	 * @throws IOException
 	 */
-	public boolean sendErrorLogEmail(String subject, String message, Properties prop) throws AddressException,
-			MessagingException, IOException {
+	public boolean sendErrorLogEmail(String subject, String message, Properties prop)
+			throws AddressException, MessagingException, IOException {
 		boolean success = false;
 		// get SMTP server properties
 		Properties properties = new Properties();
@@ -273,18 +271,20 @@ public class EmailSender {
 
 			final String userName = prop.getProperty(GlobalEmail.MAIL_FROM_ADDRESS_USERNAME);
 			final String password = prop.getProperty(GlobalEmail.MAIL_FROM_ADDRESS_PASSWORD);
-			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_HOST), prop.getProperty(GlobalEmail.SMTP_MAIL_SERVER));
+			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_HOST),
+					prop.getProperty(GlobalEmail.SMTP_MAIL_SERVER));
 			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_PORT), prop.getProperty(GlobalEmail.SMTP_PORT));
 			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_AUTH_SMTP_STARTTLS_ENABLE), GlobalEmail.FALSE);
 			properties.put(prop.getProperty(GlobalEmail.MAIL_SMTP_AUTH), GlobalEmail.TRUE);
 			properties.put(prop.getProperty(GlobalEmail.MAIL_USER), userName);
 			properties.put(prop.getProperty(GlobalEmail.MAIL_PASSWORD), password);
-			Authenticator auth = new Authenticator() {
-				public PasswordAuthentication getPasswordAuthentication() {
+			// session with an authenticator
+			Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(userName, password);
 				}
-			};
-			Session session = Session.getInstance(properties, auth);
+			});
+
 			// creates a new e-mail message
 			Message msg = new MimeMessage(session);
 			String mailProp = prop.getProperty(GlobalEmail.ERROR_LOG_MAIL_TO_ADDRESS);
@@ -317,8 +317,6 @@ public class EmailSender {
 			Transport.send(msg);
 			success = true;
 			System.out.println("Process Error Notification has been sent");
-		} catch (MailConnectException e) {
-			log.error(GlobalErrors.MAIL_NETWORK_ERROR + e.getMessage());
 		} catch (Exception e) {
 			log.error(GlobalErrors.MAIL_FAILURE + "  " + e.getMessage());
 		}

@@ -34,12 +34,18 @@ public class Integration {
 				// this will force a reconfiguration
 				context.setConfigLocation(file.toURI());
 				
-				//PropertyConfigurator.configure(prop.getProperty(Global.LOG_FILE));
 				// To schedule and process the ETL jar file
 				System.out.println("ETL Scheduler has been started.....");
-				ScheduleETLProcess process = new ScheduleETLProcess();
+				ScheduleETLProcess etlProcess = new ScheduleETLProcess();
 				if (!prop.isEmpty()) {
-					process.run(prop);
+					etlProcess.run(prop);
+				}
+				
+				// To email files
+				System.out.println("Scheduler for Sending files has been started.....");
+				ScheduleEmailFiles emailProcess = new ScheduleEmailFiles();
+				if (!prop.isEmpty()) {
+					emailProcess.run(prop);
 				}
 				
 				// To delete the older files

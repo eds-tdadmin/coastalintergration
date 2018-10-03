@@ -1,37 +1,38 @@
 package com.coastal.dwds.CoastalIntegration.process;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.TimerTask;
+
+import javax.mail.MessagingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.coastal.dwds.CoastalIntegration.constant.Global;
 
-public class ETLGeneratedFiles extends TimerTask {
-	private static final Logger log = LogManager.getLogger(ETLGeneratedFiles.class);
-	
-	FilesTransferProcess fileprocess = new FilesTransferProcess();
-	ReadExcelProcess excelprocess = new ReadExcelProcess();
+public class MailFilesProcess extends TimerTask {
+	private static final Logger log = LogManager.getLogger(MailFilesProcess.class);
 	CompressFileGeneration compProcess = new CompressFileGeneration();
 	MailExcelFileData fileData = new MailExcelFileData();
 
 	/**
-	 * @see java.util.TimerTask#run() method for create or update standard
-	 *      folder structure for Engineer updated files and log file generation
+	 * @see java.util.TimerTask#run() method for create or update standard folder
+	 *      structure for Engineer updated files and log file generation
 	 */
+	@SuppressWarnings("unused")
+	@Override
 	public void run() {
-		System.out.println("creating or updating directories");
+		System.out.println("checking or creating directories");
 		boolean success = false;
-		boolean copyResult = false;
 		Properties prop = null;
 		try {
 			prop = fileData.loadPropertiesFile();
-			
-			File reportEngineLocation = new File(prop.getProperty(Global.PSC) + Global.FOLDER_SEPARATOR
+			// System.out.println("crating or updating backup and process location");
+			File reportEnglineLocation = new File(prop.getProperty(Global.PSC) + Global.FOLDER_SEPARATOR
 					+ prop.getProperty(Global.REPORT_ENGINE_LOCATION) + Global.FOLDER_SEPARATOR);
-			File reportEngineProcessFileLocation = new File(reportEngineLocation + Global.FOLDER_SEPARATOR
+			File reportEngineProcessFileLocation = new File(reportEnglineLocation + Global.FOLDER_SEPARATOR
 					+ prop.getProperty(Global.PROCESS_FOLDER) + Global.FOLDER_SEPARATOR);
 			if (!reportEngineProcessFileLocation.exists()) {
 				reportEngineProcessFileLocation.mkdirs();
@@ -40,18 +41,19 @@ public class ETLGeneratedFiles extends TimerTask {
 			if (flagFile.exists()) {
 				flagFile.delete();
 			}
-			System.out.println(" Started executing ETL Script to generate DDR Reports...");
-			
-			copyResult = fileprocess.copyFiles(prop);
-			if(copyResult == true) {
-				success = excelprocess.readExcelFile(prop);
-			}
-			
-			if (success) {
-				fileprocess.delete(prop);
-				success = compProcess.sendNotificationEmail(reportEngineProcessFileLocation, prop);
-				System.out.println(" Finished the process of generating DDR Reports.");
-			}
+
+			success = compProcess.sendCompressFile(prop);
+			System.out.println(" Finished the process of sending DDR Reports.");
+
+		} catch (IOException e) {
+			log.error(e.getMessage());
+			sendMail(e.getMessage(), prop);
+		} catch (ClassNotFoundException e) {
+			log.error(e.getMessage());
+			sendMail(e.getMessage(), prop);
+		} catch (MessagingException e) {
+			log.error(e.getMessage());
+			sendMail(e.getMessage(), prop);
 		} catch (NullPointerException e) {
 			log.error(e.getMessage());
 			sendMail("The data input is " + e.getMessage(), prop);
@@ -64,12 +66,10 @@ public class ETLGeneratedFiles extends TimerTask {
 	private void sendMail(String message, Properties prop) {
 		EmailSender sender = new EmailSender();
 		try {
-			sender.sendErrorLogEmail("Process is Interrupted... ", "Process has been stopped due to " + Global.NEXT_LINE
-					+ message, prop);
+			sender.sendErrorLogEmail("Process is Interrupted... ",
+					"Process has been stopped due to " + Global.NEXT_LINE + message, prop);
 		} catch (Exception e1) {
 			log.error(e1.getMessage());
 		}
 	}
-
-	
 }
