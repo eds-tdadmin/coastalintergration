@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subreport_opsummary" pageWidth="1260" pageHeight="842" columnWidth="1260" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="57e61543-c8ad-48aa-b2f8-49b0e1e34aef">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="fromdt" class="java.util.Date"/>
+	<field name="todt" class="java.util.Date"/>
+	<field name="hrs" class="java.lang.Double"/>
+	<field name="phase" class="java.lang.String"/>
+	<field name="operation" class="java.lang.String"/>
+	<field name="nptcode" class="java.lang.String"/>
+	<field name="mdfrom" class="java.lang.Double"/>
+	<field name="desc" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.spreadsheet.SpreadsheetLayout"/>
+			<textField>
+				<reportElement x="0" y="0" width="70" height="20" uuid="fe32ab55-e8f1-4bba-b123-e72537273f27"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fromdt}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="70" y="0" width="70" height="20" uuid="02ddcde9-22ae-42a0-a6ab-197a53d2f100"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{todt}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="0" width="70" height="20" uuid="38818c1c-91d1-4f5a-855e-22a5a2166bb5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{hrs}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="0" width="70" height="20" uuid="68d64d88-8bd9-42f4-9eec-82aa69d5c4d1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{phase}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="70" height="20" uuid="cc12d37b-e480-4283-b502-19b272fc035a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{operation}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="350" y="0" width="140" height="20" uuid="90cb86df-be5d-438a-b519-95e26cbf865e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nptcode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="490" y="0" width="70" height="20" uuid="810d6c39-7a28-4a82-91b5-546af3f4b7a1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{mdfrom}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="560" y="0" width="700" height="20" uuid="c627e918-9c8b-44af-808a-aeb4d8b506b9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{desc}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

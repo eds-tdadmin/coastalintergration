@@ -11,14 +11,8 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<subDataset name="OpSummaryData" uuid="17a7b21d-e639-4154-b613-5c691ade6996">
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-		<queryString>
-			<![CDATA[]]>
-		</queryString>
-	</subDataset>
-	<parameter name="opSummaryLst" class="com.coastal.dwds.CoastalIntegration.model.ReportBean" nestedType="com.coastal.dwds.CoastalIntegration.model.OpSummary">
-		<defaultValueExpression><![CDATA[$P{opSummaryLst}.getOpSummaryLst()]]></defaultValueExpression>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\CDS\\Coastal\\JRXML\\"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[]]>
@@ -328,7 +322,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="666" splitType="Stretch">
+		<band height="1137" splitType="Stretch">
 			<staticText>
 				<reportElement positionType="Float" x="-20" y="-1" width="140" height="20" uuid="735e57a2-13f0-45cc-a177-4617e21645f4"/>
 				<textElement verticalAlignment="Middle">
@@ -1534,15 +1528,63 @@
 				</textElement>
 				<textFieldExpression><![CDATA[Double.valueOf(0.00)]]></textFieldExpression>
 			</textField>
+			<subreport>
+				<reportElement stretchType="ContainerHeight" x="-20" y="419" width="1260" height="20" isPrintInFirstWholeBand="true" uuid="a7c945ca-5088-45a4-85bf-c409da439ef7"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{opSummaryLst})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"subreport_opsummary.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="-20" y="379" width="210" height="20" uuid="32137c9c-cf50-43b6-a9d2-8eac10b2ba78"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="-20" y="399" width="70" height="20" uuid="353183e5-01a6-4379-849a-899f8dbba927"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[From]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="50" y="399" width="70" height="20" uuid="4a61ee32-3617-45b1-bf04-a1fe711d7715"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[To]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="399" width="70" height="20" uuid="dce8939b-6801-4c80-a1ea-0ab31e49cbf1"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Hrs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="379" width="70" height="40" uuid="26588e29-41f0-49b1-857b-7fa812a0fd99"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Phase]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="260" y="379" width="70" height="40" uuid="dd38756d-8ad2-4f4f-a61f-5f2b9aafc810"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Code/Oprn]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="330" y="379" width="140" height="40" uuid="59ff3f15-714c-4bf3-817a-ab2ea3886c36"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Subcode/Group]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="470" y="379" width="70" height="40" uuid="3f2ad18a-b941-413b-a1c6-e1ba4c6c4738"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[MD From (ft)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="540" y="379" width="700" height="40" uuid="cb02805a-6e36-4373-a16a-fb01f51dea3b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Operation Desc]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="" positionType="Float" x="-20" y="439" width="1260" height="20" isRemoveLineWhenBlank="true" uuid="73efd429-32a4-434b-b88d-828f7b40578c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NPT SUMMARY]]></text>
+			</staticText>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band height="54" splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
 </jasperReport>
