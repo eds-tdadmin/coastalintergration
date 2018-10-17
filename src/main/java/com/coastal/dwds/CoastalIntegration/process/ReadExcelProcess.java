@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -97,8 +98,8 @@ public class ReadExcelProcess {
 
 				CustomBeanFactory.setBeanArray(reportBean);
 
-				exportResult = expExl.exportExcel(prop, wellinfo);
-
+				exportResult = expExl.exportExcel(prop, wellinfo, opSummaryLst);
+				workbook.close();
 			}
 
 		} catch (FileNotFoundException fnfe) {
@@ -430,14 +431,17 @@ public class ReadExcelProcess {
 		OpSummary opsSummary = null;
 
 		Row row = null;
+		Properties prop_phase = loadPropertiesFile("phase");
+		Properties prop_group = loadPropertiesFile("group");
+		Properties prop_subcode = loadPropertiesFile("subcode");
 
 		for (int rowNum = start + 3; rowNum < end; rowNum++) {
+
 			opsSummary = new OpSummary();
 			row = sheet.getRow(rowNum);
 
 			if (row.getCell(1).getDateCellValue() != null && row.getCell(2).getDateCellValue() != null) {
 				opsSummary.setFromdt(row.getCell(1).getDateCellValue());
-				System.out.println("--- opsummary check 1 ----" + opsSummary.getFromdt());
 				if (row.getCell(2) != null) {
 					opsSummary.setTodt(row.getCell(2).getDateCellValue());
 				}
@@ -445,13 +449,13 @@ public class ReadExcelProcess {
 					opsSummary.setHrs(row.getCell(3).getNumericCellValue());
 				}
 				if (row.getCell(4) != null) {
-					opsSummary.setPhase(row.getCell(4).getStringCellValue());
+					opsSummary.setPhase(prop_phase.getProperty(row.getCell(4).getStringCellValue()));
 				}
 				if (row.getCell(5) != null) {
-					opsSummary.setOperation(row.getCell(5).getStringCellValue());
+					opsSummary.setGroup(prop_group.getProperty(row.getCell(5).getStringCellValue()));
 				}
-				if (row.getCell(6) != null) {
-					opsSummary.setNptcode(row.getCell(6).getStringCellValue());
+				if (row.getCell(5) != null) {
+					opsSummary.setSubcode(prop_subcode.getProperty(row.getCell(5).getStringCellValue()));
 				}
 				if (row.getCell(7) != null) {
 					opsSummary.setMdfrom(row.getCell(7).getNumericCellValue());
@@ -465,6 +469,32 @@ public class ReadExcelProcess {
 
 		return opSummaryLst;
 
+	}
+
+	public static Properties loadPropertiesFile(String filename) {
+		File currFolder = new File(System.getProperty("user.dir"));
+		File[] listOfFiles = currFolder.listFiles();
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+			for (File file : listOfFiles) {
+				String ext = file.getName();
+				if (ext.equals(Global.PHASE_PROP) && ext.equals(filename + ".properties")) {
+					input = new FileInputStream(file);
+					prop.load(input);
+				} else if (ext.equals(Global.GROUP_PROP) && ext.equals(filename + ".properties")) {
+					input = new FileInputStream(file);
+					prop.load(input);
+				} else if (ext.equals(Global.SUBCODE_PROP) && ext.equals(filename + ".properties")) {
+					input = new FileInputStream(file);
+					prop.load(input);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			// log.error(e.getMessage());
+		}
+		return prop;
 	}
 
 }
