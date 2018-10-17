@@ -7,7 +7,8 @@ public class OpSummary {
 	private Date todt;
 	private Double hrs;
 	private String phase;
-	private String operation;
+	private String group;
+	private String subcode;
 	private String nptcode;
 	private Double mdfrom;
 	private String desc;
@@ -44,12 +45,20 @@ public class OpSummary {
 		this.phase = phase;
 	}
 
-	public String getOperation() {
-		return operation;
+	public String getGroup() {
+		return group;
 	}
 
-	public void setOperation(String operation) {
-		this.operation = operation;
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
+	public String getSubcode() {
+		return subcode;
+	}
+
+	public void setSubcode(String subcode) {
+		this.subcode = subcode;
 	}
 
 	public String getNptcode() {
