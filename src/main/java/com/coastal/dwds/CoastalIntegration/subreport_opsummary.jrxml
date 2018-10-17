@@ -9,8 +9,8 @@
 	<field name="todt" class="java.util.Date"/>
 	<field name="hrs" class="java.lang.Double"/>
 	<field name="phase" class="java.lang.String"/>
-	<field name="operation" class="java.lang.String"/>
-	<field name="nptcode" class="java.lang.String"/>
+	<field name="group" class="java.lang.String"/>
+	<field name="subcode" class="java.lang.String"/>
 	<field name="mdfrom" class="java.lang.Double"/>
 	<field name="desc" class="java.lang.String"/>
 	<background>
@@ -72,7 +72,7 @@
 					<rightPen lineWidth="0.75" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{operation}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{group}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="0" width="140" height="20" uuid="90cb86df-be5d-438a-b519-95e26cbf865e"/>
@@ -83,7 +83,7 @@
 					<rightPen lineWidth="0.75" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{nptcode}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{subcode}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="490" y="0" width="70" height="20" uuid="810d6c39-7a28-4a82-91b5-546af3f4b7a1"/>
