@@ -46,4 +46,7 @@ public class Global {
 	public static final String DURATION_DAYS_DELETE = "DURATION_DAYS_DELETE";
 	public static final String FLAG_FILE_DIR = "C://CDS//Logs//ETL_FLAG.TXT";
 	public static final String JRXML_FILE = "JRXML_FILES";
+	public static final String PHASE_PROP = "phase.properties";
+	public static final String GROUP_PROP = "group.properties";
+	public static final String SUBCODE_PROP = "subcode.properties";
 }
